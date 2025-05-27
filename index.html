@@ -1,0 +1,210 @@
+
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlayFit Express</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Fredoka One', cursive;
+    }
+    body {
+      background: linear-gradient(to bottom right, #ffe4ec, #d0f0ff);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    h1 {
+      margin: 20px 0;
+      font-size: 2em;
+      color: #ff5e78;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+    .avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      margin: 20px;
+      border: 6px solid #ffafcc;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.4s ease;
+    }
+    .avatar:hover {
+      transform: scale(1.05);
+    }
+    .closet {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .item {
+      width: 80px;
+      height: 80px;
+      margin: 10px;
+      border: 3px solid #ffd6ec;
+      border-radius: 14px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      background-color: #fff0f6;
+    }
+    .item:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    .controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button, input[type="file"] {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      background: #ff82a9;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: background 0.3s, transform 0.2s;
+    }
+    button:hover, input[type="file"]:hover {
+      background: #ff6390;
+      transform: scale(1.05);
+    }
+    #styleDesc {
+      margin-top: 20px;
+      font-size: 1.2em;
+      text-align: center;
+      color: #5b3a70;
+    }
+    .characters {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .character {
+      width: 100px;
+      height: 100px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #888;
+      text-align: center;
+    }
+    canvas {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>PlayFit Express</h1>
+  <div class="avatar" id="avatar"></div>
+  <div class="closet" id="closet">
+  </div>
+  <div class="controls">
+    <button onclick="shuffleStyle()">Shuffle Outfit</button>
+    <button onclick="saveLook()">Save My Look</button>
+    <button onclick="downloadLook()">Download Look</button>
+    <input type="file" accept="image/*" onchange="uploadCustomStyle(event)" />
+  </div>
+  <div id="styleDesc">Pick an outfit to begin!</div>  <div class="characters">
+    <div class="character" style="background-image: url('https://i.postimg.cc/pXJH0BCs/character-bunny.png');"></div>
+    <div class="character" style="background-image: url('https://i.postimg.cc/bwvm7CN2/character-kitty.png');"></div>
+    <div class="character" style="background-image: url('https://i.postimg.cc/T1CgJ4Dw/character-bear.png');"></div>
+  </div>  <footer>
+    PlayFit Express © 2025. Express your joy through fashion.
+  </footer><canvas id="cropCanvas"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  <script>
+    const avatar = document.getElementById('avatar');
+    const items = document.querySelectorAll('.item');
+    const styleDesc = document.getElementById('styleDesc');
+
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        avatar.style.backgroundImage = item.style.backgroundImage;
+        styleDesc.textContent = `You're channeling: ${item.dataset.style}!`;
+      });
+    });
+
+    function shuffleStyle() {
+      const allItems = document.querySelectorAll('.item');
+      const randomItem = allItems[Math.floor(Math.random() * allItems.length)];
+      avatar.style.backgroundImage = randomItem.style.backgroundImage;
+      styleDesc.textContent = `You're feeling: ${randomItem.dataset.style}!`;
+    }
+
+    function saveLook() {
+      alert("Your look has been saved to your inner child's heart! (More features coming soon.)");
+    }
+
+    function downloadLook() {
+      html2canvas(avatar).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'playfit-look.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+
+    function uploadCustomStyle(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.getElementById('cropCanvas');
+          canvas.width = 80;
+          canvas.height = 80;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, 80, 80);
+          const croppedData = canvas.toDataURL();
+          const newItem = document.createElement('div');
+          newItem.className = 'item';
+          newItem.style.backgroundImage = `url(${croppedData})`;
+          newItem.dataset.style = 'Custom Style';
+          newItem.onclick = () => {
+            avatar.style.backgroundImage = newItem.style.backgroundImage;
+            styleDesc.textContent = `You're showing off a custom style!`;
+          };
+          document.getElementById('closet').appendChild(newItem);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  </script></body>
+</html>
